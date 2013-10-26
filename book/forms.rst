@@ -1232,8 +1232,6 @@ renders the form:
         {# src/Acme/TaskBundle/Resources/views/Default/new.html.twig #}
         {% form_theme form 'AcmeTaskBundle:Form:fields.html.twig' %}
 
-        {% form_theme form 'AcmeTaskBundle:Form:fields.html.twig' 'AcmeTaskBundle:Form:fields2.html.twig' %}
-
         <form ...>
 
     .. code-block:: html+php
@@ -1241,22 +1239,60 @@ renders the form:
         <!-- src/Acme/TaskBundle/Resources/views/Default/new.html.php -->
         <?php $view['form']->setTheme($form, array('AcmeTaskBundle:Form')) ?>
 
-        <?php $view['form']->setTheme($form, array('AcmeTaskBundle:Form', 'AcmeTaskBundle:Form')) ?>
-
         <form ...>
 
 The ``form_theme`` tag (in Twig) "imports" the fragments defined in the given
-template and uses them when rendering the form. In other words, when the
-``form_row`` function is called later in this template, it will use the ``form_row``
-block from your custom theme (instead of the default ``form_row`` block
-that ships with Symfony).
+template and uses them when rendering the form represented by the ``form`` variable.
+In other words, when the ``form_row`` function is called later in this template, it
+will use the ``form_row`` block from your custom theme (instead of the default
+``form_row`` block that ships with Symfony).
+
+If you have more than one form in a template you can import different themes for
+them by specifying different variable in the ``form_theme`` tag. This can also be
+used to format child forms differently:
+
+.. configuration-block::
+
+    .. code-block:: html+jinja
+
+        {# src/Acme/TaskBundle/Resources/views/Default/new.html.twig #}
+        {% form_theme form 'AcmeTaskBundle:Form:fields.html.twig' %}
+        {% form_theme form.child 'AcmeTaskBundle:Form:fields.html.twig' %}
+        {% form_theme formLogin 'AcmeTaskBundle:Form:fieldsLogin.html.twig' %}
+
+        <form ...>
+
+    .. code-block:: html+php
+
+        <!-- src/Acme/TaskBundle/Resources/views/Default/new.html.php -->
+        <?php $view['form']->setTheme($form, array('AcmeTaskBundle:Form')) ?>
+        <?php $view['form']->setTheme($form, array('AcmeTaskBundle:Form')) ?>
+        <?php $view['form']->setTheme($formLogin, array('AcmeTaskBundle:Form')) ?>
+
+        <form ...>
 
 Your custom theme does not have to override all the blocks. When rendering a block
 which is not overridden in your custom theme, the theming engine will fall back
 to the global theme (defined at the bundle level).
 
 If several custom themes are provided they will be searched in the listed order
-before falling back to the global theme.
+before falling back to the global theme:
+
+.. configuration-block::
+
+    .. code-block:: html+jinja
+
+        {# src/Acme/TaskBundle/Resources/views/Default/new.html.twig #}
+        {% form_theme form 'AcmeTaskBundle:Form:fields.html.twig' 'AcmeTaskBundle:Form:fields2.html.twig' %}
+
+        <form ...>
+
+    .. code-block:: html+php
+
+        <!-- src/Acme/TaskBundle/Resources/views/Default/new.html.php -->
+        <?php $view['form']->setTheme($form, array('AcmeTaskBundle:Form', 'AcmeTaskBundle:Form')) ?>
+
+        <form ...>
 
 To customize any portion of a form, you just need to override the appropriate
 fragment. Knowing exactly which block or file to override is the subject of
@@ -1270,8 +1306,6 @@ the next section.
    .. code-block:: html+jinja
 
        {# src/Acme/TaskBundle/Resources/views/Default/new.html.twig #}
-
-       {% form_theme form with 'AcmeTaskBundle:Form:fields.html.twig' %}
 
        {% form_theme form with ['AcmeTaskBundle:Form:fields.html.twig', 'AcmeTaskBundle:Form:fields2.html.twig'] %}
 
